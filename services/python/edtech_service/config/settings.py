@@ -12,6 +12,9 @@ class Settings(BaseSettings):
     ZOOM_API_KEY: str = Field(default="")
     ZOOM_API_SECRET: str = Field(default="")
     ZOOM_ACCOUNT_ID: str = Field(default="")
+    ZOOM_WEBHOOK_SECRET_TOKEN: str = Field(default="")
+    ZOOM_WEBHOOK_DISABLE_VERIFY: bool = Field(default=True)
+    ZOOM_WEBHOOK_TOLERANCE_SECONDS: int = Field(default=300)
 
     model_config = SettingsConfigDict(
         env_file=".env",
