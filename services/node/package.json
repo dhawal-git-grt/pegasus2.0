@@ -13,7 +13,9 @@
     "dotenv": "*",
     "envalid": "*",
     "express": "*",
-    "pino": "*"
+    "pino": "*",
+    "axios": "*",
+    "ics": "*"
   },
   "devDependencies": {
     "jest": "*",

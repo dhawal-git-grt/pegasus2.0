@@ -21,4 +21,24 @@ describe('POST /live-classes/schedule', () => {
       .send({ instructor_id: 'i1', course_id: 'c1', start_time: 'not-a-date' });
     expect(res.status).toBe(400);
   });
+
+  it('accepts participants array', async () => {
+    const res = await request(app)
+      .post('/live-classes/schedule')
+      .send({
+        instructor_id: 'i1',
+        course_id: 'c1',
+        start_time: '2025-01-01T10:00:00Z',
+        participants: ['a@example.com', { email: 'b@example.com', name: 'B' }],
+      });
+    expect(res.status).toBe(200);
+    expect(res.body.meeting).toBeDefined();
+  });
+
+  it('rejects non-array participants', async () => {
+    const res = await request(app)
+      .post('/live-classes/schedule')
+      .send({ instructor_id: 'i1', course_id: 'c1', start_time: '2025-01-01T10:00:00Z', participants: 'x' });
+    expect(res.status).toBe(400);
+  });
 });

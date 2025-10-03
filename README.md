@@ -2,7 +2,7 @@
 
 This repository contains two service skeletons for an EdTech platform:
 
-- Node.js service with Express, env-driven config, Pino structured logging, a Zoom mock client, and Jest tests.
+- Node.js service with Express, env-driven config, Pino structured logging, Zoom mock/real API client (Server-to-Server OAuth), ICS invite generation, and Jest tests.
 - Python service with FastAPI, env-driven config via Pydantic + python-dotenv, Structlog structured logging, a Zoom mock client, and pytest tests.
 
 Both services include a stub for `schedule_live_class(instructor_id, course_id, start_time)` and unit tests covering config, Zoom mock, scheduling, and HTTP routes.
@@ -20,10 +20,15 @@ services/
         index.js
       clients/
         zoomMock.js
+        zoomApi.js
+        zoomClient.js
       routes/
         liveClasses.js
       services/
         schedulingService.js
+      utils/
+        ics.js
+        mailer.js
     __tests__/
     package.json
     jest.config.js
@@ -56,7 +61,13 @@ services/
 4. Start service: `npm start` (listens on `PORT`, default 3000)
 
 API:
-- POST `/live-classes/schedule` with JSON `{ "instructor_id", "course_id", "start_time" }`
+- POST `/live-classes/schedule` with JSON `{ "instructor_id", "course_id", "start_time", "participants"?: (string | {email,name})[] }`
+
+Zoom integration:
+- Default uses mock: `ZOOM_USE_MOCK=true` (no external calls).
+- To call real Zoom API (Server-to-Server OAuth): set `ZOOM_USE_MOCK=false` and provide `ZOOM_ACCOUNT_ID`, `ZOOM_CLIENT_ID`, `ZOOM_CLIENT_SECRET`, optional `ZOOM_USER_ID` (defaults to `me`).
+
+On success, the service creates a Zoom meeting and emails an ICS calendar invite to participants using a stub mailer (logs only). Replace `services/node/src/utils/mailer.js` with a real provider when ready.
 
 ### Python service (services/python)
 1. Copy `.env.example` to `.env` and adjust values.
