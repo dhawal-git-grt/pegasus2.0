@@ -1,0 +1,23 @@
+{
+  "name": "edtech-node-service",
+  "version": "0.1.0",
+  "private": true,
+  "description": "EdTech Node.js service skeleton with env-driven config, structured logging, Zoom mock, and tests.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js",
+    "test": "jest --runInBand"
+  },
+  "dependencies": {
+    "dotenv": "*",
+    "envalid": "*",
+    "express": "*",
+    "pino": "*"
+  },
+  "devDependencies": {
+    "jest": "*",
+    "supertest": "*",
+    "pino-pretty": "*"
+  }
+}
