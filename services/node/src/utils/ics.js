@@ -16,13 +16,12 @@ function normalizeAttendees(participants = []) {
   return (participants || [])
     .map((p) => (typeof p === 'string' ? { email: p } : p))
     .filter((p) => p && p.email)
-    .map((p) => ({
-      name: p.name || undefined,
-      email: p.email,
-      rsvp: true,
-      role: 'REQ-PARTICIPANT',
-      partstat: 'NEEDS-ACTION',
-    }));
+    .map((p) => {
+      const a = { email: p.email, rsvp: true };
+      if (p.name) a.name = p.name;
+      if (p.role) a.role = p.role; // optional
+      return a;
+    });
 }
 
 async function createCalendarInvite({
@@ -34,6 +33,9 @@ async function createCalendarInvite({
   organizerName = 'EdTech Platform',
   organizerEmail = 'no-reply@example.com',
   participants,
+  uid,
+  sequence,
+  status = 'CONFIRMED',
 }) {
   const attendees = normalizeAttendees(participants);
   const event = {
@@ -41,12 +43,14 @@ async function createCalendarInvite({
     title,
     description,
     duration: { minutes: durationMinutes },
-    status: 'CONFIRMED',
+    status,
     organizer: { name: organizerName, email: organizerEmail },
     attendees,
-    url,
     productId: 'edtech-node-service',
   };
+  if (url) event.url = url;
+  if (uid) event.uid = uid;
+  if (sequence !== undefined) event.sequence = sequence;
 
   return new Promise((resolve, reject) => {
     createEvent(event, (error, value) => {

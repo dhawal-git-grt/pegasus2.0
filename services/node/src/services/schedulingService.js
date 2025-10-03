@@ -2,6 +2,7 @@ const zoom = require('../clients/zoomClient');
 const { createCalendarInvite } = require('../utils/ics');
 const { sendEmail } = require('../utils/mailer');
 const logger = require('../logger');
+const meetingsStore = require('../stores/meetingsStore');
 
 async function schedule_live_class(instructor_id, course_id, start_time, participants = []) {
   const topic = `Course ${course_id} - Live Class`;
@@ -10,6 +11,13 @@ async function schedule_live_class(instructor_id, course_id, start_time, partici
     host_id: instructor_id,
     topic,
     start_time: startISO,
+  });
+  // Persist meeting and participants for future updates/cancellations
+  const record = meetingsStore.upsert(meeting.id, {
+    instructor_id,
+    course_id,
+    start_time: startISO,
+    participants,
   });
   // Best-effort calendar invites to participants
   try {
@@ -21,6 +29,8 @@ async function schedule_live_class(instructor_id, course_id, start_time, partici
         durationMinutes: meeting.duration || 60,
         url: meeting.join_url,
         participants,
+        uid: record.uid,
+        sequence: record.sequence,
       });
       const subject = `${topic} at ${new Date(start_time).toUTCString()}`;
       await Promise.all(

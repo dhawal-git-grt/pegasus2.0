@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { cleanEnv, str, port, bool } = require('envalid');
+const { cleanEnv, str, port, bool, num } = require('envalid');
 
 const env = cleanEnv(process.env, {
   NODE_ENV: str({ default: 'development' }),
@@ -12,6 +12,9 @@ const env = cleanEnv(process.env, {
   ZOOM_CLIENT_SECRET: str({ default: '' }),
   ZOOM_USE_MOCK: bool({ default: true }),
   ZOOM_USER_ID: str({ default: '' }),
+  ZOOM_WEBHOOK_SECRET_TOKEN: str({ default: '' }),
+  ZOOM_WEBHOOK_DISABLE_VERIFY: bool({ default: true }),
+  ZOOM_WEBHOOK_TOLERANCE_SECONDS: num({ default: 300 }),
 });
 
 module.exports = env;
